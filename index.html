@@ -47,7 +47,8 @@ header.top{grid-area:top; display:flex; align-items:baseline; gap:18px; padding:
 .ghost:hover{border-color:var(--gold)}
 .ghost[aria-pressed="true"]{background:var(--gold-soft); border-color:var(--gold)}
 
-.stage{grid-area:stage; position:relative; overflow:hidden; background:var(--stage)}
+.stage{grid-area:stage; position:relative; overflow:hidden; background:#EEE5D6}
+.bgblur{position:absolute; inset:-60px; background-size:cover; background-position:center; filter:blur(40px) saturate(.85) brightness(1.1); opacity:.32; pointer-events:none}
 .scene{position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform; transition:opacity .55s ease}
 .scene img{display:block; width:100%; height:100%; user-select:none; -webkit-user-drag:none; pointer-events:none}
 .scene.enter{opacity:0}
@@ -70,6 +71,7 @@ header.top{grid-area:top; display:flex; align-items:baseline; gap:18px; padding:
 .viewcap.on{opacity:1}
 @media (max-width:900px){ .viewbtn{bottom:62px; padding:9px 18px 9px 13px; font-size:13.5px} .viewcap{right:10px; top:10px; font-size:11px} }
 .stage.isfixed{cursor:default}
+[hidden]{display:none !important}
 #editBtn,.editbar,.editor{display:none !important}
 .plancard{display:flex; align-items:center; gap:12px; width:100%; margin:-6px 0 20px; padding:8px; border:1px solid var(--line); border-radius:10px; background:var(--bg); cursor:pointer; text-align:left; font:inherit; color:var(--ink)}
 .plancard:hover{border-color:var(--gold)}
@@ -231,6 +233,7 @@ aside.side{grid-area:side; border-left:1px solid var(--line); background:var(--s
   </header>
 
   <section class="stage" id="stage" aria-label="Không gian nhà mẫu, kéo để nhìn xung quanh">
+    <div class="bgblur" id="bgblur"></div>
     <div class="editbar" id="editbar"><span class="savestate" id="saveState">Đang chỉnh sửa</span><button id="addBtn">+ Thêm điểm</button><button id="resetBtn">Khôi phục ảnh này</button><button class="pri" id="doneBtn">Xong</button></div>
     <div class="editor" id="editor" role="dialog" aria-label="Sửa điểm"><b id="edTitle">Sửa điểm</b>
       <label for="edKind">Hạng mục</label><select id="edKind"></select>
@@ -348,9 +351,11 @@ let lastAct=performance.now(), driftDir=1, gyroOn=false, gyroT=null;
 
 function roomOf(id){ return ROOMS.findIndex(x=>x.shots.includes(id)) }
 function dims(){ return [stage.clientWidth, stage.clientHeight] }
-function baseScale(d){ const [W,H]=dims(); return Math.max(W/d.w,H/d.h)*(d.w<1000?1.04:OVER) }
+function baseScale(d){ const [W,H]=dims(); return Math.min(W/d.w,H/d.h) }
+function coverZ(v){ const [W,H]=dims(); return Math.max(W/v.d.w,H/v.d.h)/Math.min(W/v.d.w,H/v.d.h) }
+function zmax(v){ return Math.max(2.6, coverZ(v)*1.7) }
 function clampV(v){ if(v.fixed) return; const [W,H]=dims(); const iw=v.d.w*v.bs*v.z, ih=v.d.h*v.bs*v.z;
-  v.ox=Math.min(0,Math.max(W-iw,v.ox)); v.oy=Math.min(0,Math.max(H-ih,v.oy)); }
+  v.ox = iw<=W ? (W-iw)/2 : Math.min(0,Math.max(W-iw,v.ox)); v.oy = ih<=H ? (H-ih)/2 : Math.min(0,Math.max(H-ih,v.oy)); }
 function apply(v){ if(v.fixed) return; v.el.style.transform="translate3d("+v.ox+"px,"+v.oy+"px,0) scale("+v.z+")"; v.el.style.setProperty("--inv",(1/v.z).toFixed(4)) }
 function centerPose(v,px,py,z,noClamp){ const [W,H]=dims(); const o={z, ox:W/2-px/100*v.d.w*v.bs*z, oy:H/2-py/100*v.d.h*v.bs*z};
   if(!noClamp){ const t={...v,...o}; clampV(t); o.ox=t.ox; o.oy=t.oy } return o }
@@ -441,6 +446,7 @@ function goClip(id, pt, w){
   if(p && p.then) p.then(()=>setTimeout(start,150)).catch(()=>finish()); else start();
 }
 function updatePanel(){
+  try{ $("bgblur").style.backgroundImage="url("+IMGS[ROOMS[r].shots[s]].thumb+")" }catch(e){}
   const room=ROOMS[r], id=room.shots[s], shot=SHOTS[id];
   $("roomName").textContent=room.name; $("roomDesc").textContent=room.desc; $("shotCap").textContent=shot.cap;
   const ul=$("specs"); ul.innerHTML="";
@@ -505,15 +511,15 @@ stage.addEventListener("pointermove",e=>{
 });
 function endPtr(e){ ptrs.delete(e.pointerId); if(ptrs.size<2) pinch=null; if(!ptrs.size){ stage.classList.remove("dragging"); if(performance.now()-lastMove>80) vel={x:0,y:0} } }
 stage.addEventListener("pointerup",endPtr); stage.addEventListener("pointercancel",endPtr);
-function zoomAt(nz,cx,cy){ if(!cur||cur.fixed) return; nz=Math.max(1,Math.min(ZMAX,nz));
+function zoomAt(nz,cx,cy){ if(!cur||cur.fixed) return; nz=Math.max(1,Math.min(zmax(cur),nz));
   const ix=(cx-cur.ox)/cur.z, iy=(cy-cur.oy)/cur.z; cur.z=nz; cur.ox=cx-ix*nz; cur.oy=cy-iy*nz; clampV(cur); apply(cur);
   if(activeSpot>=0) closePop(); }
 stage.addEventListener("wheel",e=>{ if(!cur||cur.anim||cur.fixed||e.target.closest(".editor")) return; e.preventDefault(); hideHint(); lastAct=performance.now();
   const st=stage.getBoundingClientRect(); zoomAt(cur.z*Math.exp(-e.deltaY*0.0015), e.clientX-st.left, e.clientY-st.top) },{passive:false});
 stage.addEventListener("dblclick",e=>{ if(!cur||cur.fixed||e.target.closest(".spot,.walk,.nav,.zoom,.pop,.viewbtn")) return; const st=stage.getBoundingClientRect();
-  const nz=cur.z>1.4?1:1.7, ix=(e.clientX-st.left-cur.ox)/cur.z, iy=(e.clientY-st.top-cur.oy)/cur.z, [W,H]=dims();
+  const nz=cur.z>1.05?1:Math.min(zmax(cur),Math.max(1.6,coverZ(cur))), ix=(e.clientX-st.left-cur.ox)/cur.z, iy=(e.clientY-st.top-cur.oy)/cur.z, [W,H]=dims();
   tween(cur,(()=>{const t={...cur,z:nz,ox:e.clientX-st.left-ix*nz,oy:e.clientY-st.top-iy*nz}; clampV(t); return {ox:t.ox,oy:t.oy,z:nz}})(),450,ease.io) });
-function zoomBtn(f){ if(!cur||cur.anim||cur.fixed) return; const [W,H]=dims(); const nz=Math.max(1,Math.min(ZMAX,cur.z*f));
+function zoomBtn(f){ if(!cur||cur.anim||cur.fixed) return; const [W,H]=dims(); const nz=Math.max(1,Math.min(zmax(cur),cur.z*f));
   const ix=(W/2-cur.ox)/cur.z, iy=(H/2-cur.oy)/cur.z; const t={...cur,z:nz,ox:W/2-ix*nz,oy:H/2-iy*nz}; clampV(t);
   lastAct=performance.now(); closePop(); tween(cur,{ox:t.ox,oy:t.oy,z:nz},350,ease.io) }
 $("viewBtn").onclick=e=>{e.stopPropagation(); toggleView()};
