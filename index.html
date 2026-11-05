@@ -70,6 +70,7 @@ header.top{grid-area:top; display:flex; align-items:baseline; gap:18px; padding:
 .viewcap.on{opacity:1}
 @media (max-width:900px){ .viewbtn{bottom:62px; padding:9px 18px 9px 13px; font-size:13.5px} .viewcap{right:10px; top:10px; font-size:11px} }
 .stage.isfixed{cursor:default}
+#editBtn,.editbar,.editor{display:none !important}
 .plancard{display:flex; align-items:center; gap:12px; width:100%; margin:-6px 0 20px; padding:8px; border:1px solid var(--line); border-radius:10px; background:var(--bg); cursor:pointer; text-align:left; font:inherit; color:var(--ink)}
 .plancard:hover{border-color:var(--gold)}
 .plancard img{width:96px; height:72px; object-fit:cover; border-radius:6px; flex:0 0 auto}
@@ -287,7 +288,7 @@ const S = {
   btile:{t:"Gạch phòng tắm", d:"Lát sàn porcelain chống trơn 600×600mm, hệ số R10. Ốp tường porcelain 1200×600mm."}
 };
 const SHOTS = {
-  17:{cap:"Từ bàn ăn nhìn ra phòng khách và biển", spots:[[57.1, 16.7, "ac"], [53, 45, "win"], [70, 86, "wc"]]},
+  17:{cap:"Từ bàn ăn nhìn ra phòng khách và biển", spots:[[57.1, 16.7, "ac"], [53, 45, "win"], [70, 86, "floorLiving"]]},
   8:{cap:"Phòng khách, cửa kính ra ban công", spots:[[68, 42, "win"], [61.2, 69.6, "balcony"], [92, 92, "floorLiving"]]},
   13:{cap:"Tường tivi ốp đá và lò sưởi trang trí", spots:[[5, 42, "win"], [55, 88, "floorLiving"]]},
   12:{cap:"Từ sofa nhìn về bếp và bàn ăn", spots:[[66, 22, "kcab"], [70, 52, "counter"], [45.1, 52, "door", "Cửa chính", "Cánh dày 45mm, bề mặt MDF phủ melamine. An Cường, Soufeiya France hoặc tương đương."], [42, 88, "floorLiving"], [41.6, 53.5, "custom", "Khóa cửa Sharp", "Ứng dụng trên smarthome, cảm biến vân tay, thẻ cảm ứng, mật mã, khóa cơ"]]},
@@ -620,7 +621,7 @@ stage.addEventListener("click",e=>{ if(!editing||!adding||!cur||cur.fixed||moved
   if(e.target.closest(".spot,.walk,.nav,.pop,.zoom,.editbar,.editor,.viewbtn")) return;
   const r=cur.el.getBoundingClientRect(); const x=r1(cl((e.clientX-r.left)/r.width*100)), y=r1(cl((e.clientY-r.top)/r.height*100));
   SHOTS[cur.id].spots.push([x,y,"custom","",""]); setAdding(false); refreshSpots(); openEditor(SHOTS[cur.id].spots.length-1,true) });
-(async()=>{ try{
+(async()=>{ return; try{
   if(!window.claude||typeof window.claude.use!=="function") return;
   db=await window.claude.use("db"); if(!db) return;
   db.collection("spots").onSnapshot(snap=>{ const seen=new Set();
