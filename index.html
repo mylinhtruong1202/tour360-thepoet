@@ -262,6 +262,8 @@ aside.side{grid-area:side; border-left:1px solid var(--line); background:var(--s
   aside.side h2, .specs strong{text-shadow:0 1px 6px rgba(40,24,12,.35)}
   .specs span, aside.side .desc, .cap, .note, .tab{text-shadow:0 1px 4px rgba(40,24,12,.3)}
 }
+
+@media (min-width:901px){ .editbar{top:84px; bottom:auto} }
 </style>
 </head>
 <body>
@@ -364,9 +366,9 @@ const S = {
 };
 const SHOTS = {
   17:{cap:"Từ bàn ăn nhìn ra phòng khách và biển", spots:[[57.1, 16.7, "ac"], [53, 45, "win", "Cửa sổ, cửa ban công", "Kính hộp Low-E 2 lớp & Khung nhôm Xingfa nhập khẩu giúp cách âm, giảm nhiệt tới 70%, chống tia cực tím và tiết kiệm điện năng."], [70, 86, "floorLiving"], [62.4, 26.1, "custom", "Trần", "Trần thạch cao Knauf / Vĩnh Tường Gyproc: Ứng dụng công nghệ cao cấp chuyên dụng chống ăn mòn muối biển."]]},
-  8:{cap:"Phòng khách, cửa kính ra ban công", spots:[[68, 42, "win", "Cửa sổ, cửa ban công", "Kính hộp Low-E 2 lớp & Khung nhôm Xingfa nhập khẩu giúp cách âm, giảm nhiệt tới 70%, chống tia cực tím và tiết kiệm điện."], [61.2, 69.6, "balcony"], [92, 92, "floorLiving"]]},
+  8:{cap:"Phòng khách, cửa kính ra ban công", spots:[[68, 42, "win", "Cửa sổ, cửa ban công", "Kính hộp Low-E 2 lớp & Khung nhôm Xingfa nhập khẩu giúp cách âm, giảm nhiệt tới 70%, chống tia cực tím và tiết kiệm điện."], [61.2, 69.6, "balcony"], [80.6, 95.2, "floorLiving"]]},
   13:{cap:"Tường tivi ốp đá và lò sưởi trang trí", spots:[[5, 42, "win", "Cửa sổ, cửa ban công", "Khung nhôm Xingfa nhập khẩu, kính hộp Low-E 2 lớp nhập khẩu."], [55, 88, "floorLiving"]]},
-  12:{cap:"Từ sofa nhìn về bếp và bàn ăn", spots:[[66, 22, "kcab"], [70, 52, "counter"], [45.1, 52, "door", "Cửa chính", "Cánh dày 45mm, bề mặt MDF phủ melamine với lõi vật liệu chống cháy. An Cường, Soufeiya France hoặc tương đương."], [42, 88, "floorLiving"], [41.6, 53.5, "custom", "Khóa cửa Sharp", "Ứng dụng mở cửa trên app smarthome, cảm biến vân tay, thẻ cảm ứng, mật mã, khóa cơ"]]},
+  12:{cap:"Từ sofa nhìn về bếp và bàn ăn", spots:[[71.2, 34.3, "kcab"], [72.4, 54, "counter"], [45.1, 52, "door", "Cửa chính", "Cánh dày 45mm, bề mặt MDF phủ melamine với lõi vật liệu chống cháy. An Cường, Soufeiya France hoặc tương đương."], [42, 88, "floorLiving"], [41.6, 53.5, "custom", "Khóa cửa Sharp", "Ứng dụng mở cửa trên app smarthome, cảm biến vân tay, thẻ cảm ứng, mật mã, khóa cơ"], [67.9, 56.5, "micro"], [67, 40, "hood"], [81.6, 48.3, "kfaucet"], [81.3, 54.8, "sink"]]},
   5:{cap:"Bàn ăn cạnh vách kính phòng ngủ thứ hai", spots:[[81,17,"ac"],[90,57,"win"],[40,90,"floorLiving"]]},
   6:{cap:"Bếp chữ L và bàn ăn", spots:[[39.8, 38.8, "kcab", "Tủ bếp trên và dưới", "Gỗ công nghiệp MDF công nghệ phủ Hi-gloss. An Cường, Soufeiya France hoặc tương đương."], [30.4, 45.4, "hood"], [41.5, 59.7, "counter"], [24, 90, "floorLiving"], [33.4, 61.8, "micro"], [50.5, 55.5, "kfaucet"], [47.9, 60.1, "sink"], [25.3, 59.6, "hob"]]},
   7:{cap:"Đảo bếp và tủ bếp", spots:[[84.9, 30.7, "kcab", "Tủ bếp trên và dưới", "Gỗ công nghiệp MDF công nghệ phủ hi-gloss - Thương hiệu An Cường, Soufeiya France hoặc tương đương."], [72.3, 56.3, "hob"], [88.1, 57.7, "counter"], [30, 92, "floorLiving"], [85.3, 61.5, "kcab"]]},
@@ -379,8 +381,8 @@ const SHOTS = {
   11:{cap:"Phòng ngủ chính nhìn từ hành lang", spots:[[57, 47, "door", "Cửa phòng ngủ", "Cánh dày 45mm, bề mặt MDF phủ melamine. An Cường, Soufeiya France hoặc tương đương."], [45, 88, "floorBed"]]},
   4:{cap:"Lối tủ áo kính dẫn vào phòng tắm chính", spots:[[50, 61, "basin"], [50, 56, "faucet"], [55, 90, "btile"]]},
   2:{cap:"Khu vệ sinh có cửa sổ lấy sáng", spots:[[50, 77, "wc"], [78, 50, "glass"], [40, 93, "btile"], [61.7, 71, "paper"]]},
-  3:{cap:"Khu tắm đứng", spots:[[50, 11, "shower"], [24, 52, "glass"], [60, 92, "btile", "Gạch phòng tắm", "- Lát sàn porcelain chống trơn 600×600mm, hệ số R10. \n- Ốp tường porcelain 1200×600mm."], [49.9, 84.9, "drainLong"]]},
-  1:{cap:"WC phụ", spots:[[35, 61, "basin"], [30, 56, "faucet"], [57, 74, "wc"], [87, 10, "shower"], [72, 45, "glass"], [40, 90, "btile"], [44.5, 68.3, "paper"], [66, 80.7, "drainSq"], [85.4, 86, "drainLong"]]}
+  3:{cap:"Khu tắm đứng", spots:[[53.6, 15.5, "shower"], [24, 52, "glass"], [60, 92, "btile", "Gạch phòng tắm", "- Lát sàn porcelain chống trơn 600×600mm, hệ số R10. \n- Ốp tường porcelain 1200×600mm."], [49.9, 84.9, "drainLong"]]},
+  1:{cap:"WC phụ", spots:[[35, 61, "basin"], [30, 56, "faucet"], [57, 74, "wc"], [91, 11.4, "shower"], [72, 45, "glass"], [40, 90, "btile"], [44.5, 68.3, "paper"], [66, 80.7, "drainSq"], [85.4, 86, "drainLong"]]}
 };
 const ROOMS = [
   {id:"khach-bep", name:"Phòng khách và bếp", desc:"Phòng khách, bàn ăn và bếp chữ L nối liền nhau, mở ra ban công lan can kính nhìn thẳng ra biển.", shots:[17,8,13,12,5,6,7]},
@@ -661,7 +663,7 @@ const pendingIds=new Set(), writing={}, dirty={};
 (function fillKinds(){ const sel=$("edKind"); Object.keys(S).forEach(k=>{ const o=document.createElement("option"); o.value=k; o.textContent=S[k].t; sel.appendChild(o) });
   const o=document.createElement("option"); o.value="custom"; o.textContent="Khác (tự nhập)"; sel.appendChild(o) })();
 function setSave(txt){ $("saveState").textContent=txt }
-function setEditing(on){ editing=on; stage.classList.toggle("editing",on); $("editBtn").setAttribute("aria-pressed",on);
+function setEditing(on){ editing=on; document.body.classList.toggle("panel-off",on); stage.classList.toggle("editing",on); $("editBtn").setAttribute("aria-pressed",on);
   closePop(); closeEditor(); setAdding(false); stopAuto(); hideHint(); lastAct=performance.now(); if(on) setSave(db?"Đang chỉnh sửa":"Chưa kết nối, thay đổi sẽ không được lưu") }
 function setAdding(on){ adding=on; stage.classList.toggle("adding",on); $("addBtn").classList.toggle("on",on); $("addBtn").textContent=on?"Chạm lên ảnh để đặt điểm":"+ Thêm điểm" }
 function placeEditor(i){ const el=cur.el.querySelectorAll(".spot")[i], ed=$("editor"); if(!el) return;
